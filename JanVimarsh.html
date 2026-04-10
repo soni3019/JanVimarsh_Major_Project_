@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Jan Vimarsh Portal – Public Sentiment Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0f2d5a;--blue:#1a56db;--indigo:#4338ca;
+  --violet:#7c3aed;--pink:#db2777;--rose:#f43f5e;
+  --orange:#f97316;--amber:#f59e0b;--green:#10b981;
+  --teal:#0d9488;--cyan:#06b6d4;--purple:#9333ea;
+  --grad1:linear-gradient(135deg,#0f2d5a 0%,#1a56db 50%,#4338ca 100%);
+  --grad2:linear-gradient(135deg,#7c3aed,#db2777);
+  --grad3:linear-gradient(135deg,#f97316,#f59e0b);
+  --grad4:linear-gradient(135deg,#10b981,#06b6d4);
+  --grad5:linear-gradient(135deg,#db2777,#f43f5e);
+  --grad6:linear-gradient(135deg,#0d9488,#1a56db);
+}
+body{font-family:'Nunito',sans-serif;background:#f0f4ff;color:#1e293b;overflow-x:hidden}
+h1,h2,h3{font-family:'Sora',sans-serif}
+
+/* NAVBAR */
+.topbar{background:#0f2d5a;color:#fff;font-size:12px;text-align:center;padding:6px;letter-spacing:.5px}
+.navbar{background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.08);position:sticky;top:0;z-index:999;padding:0 24px}
+.nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:68px}
+.nav-logo{display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none}
+.nav-logo-circle{width:44px;height:44px;background:var(--grad1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Sora',sans-serif;font-weight:800;font-size:14px}
+.nav-logo-text{line-height:1.2}
+.nav-logo-title{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#0f2d5a}
+.nav-logo-sub{font-size:11px;color:#64748b}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-btn{border:none;background:none;padding:8px 16px;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:600;font-size:14px;color:#475569;cursor:pointer;transition:all .2s}
+.nav-btn:hover,.nav-btn.active{background:#eff6ff;color:#1a56db}
+.nav-btn.active{background:linear-gradient(135deg,#1a56db,#4338ca);color:#fff}
+.nav-actions{display:flex;gap:8px;align-items:center}
+.btn-login{border:2px solid #1a56db;background:transparent;color:#1a56db;padding:8px 20px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+.btn-login:hover{background:#1a56db;color:#fff}
+.btn-register{background:linear-gradient(135deg,#f97316,#f59e0b);border:none;color:#fff;padding:8px 20px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+.btn-register:hover{opacity:.9;transform:translateY(-1px)}
+.notif-btn{position:relative;background:none;border:none;cursor:pointer;padding:8px;border-radius:10px;transition:background .2s}
+.notif-btn:hover{background:#f1f5f9}
+.notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:#f43f5e;border-radius:50%;border:2px solid #fff}
+.user-chip{display:flex;align-items:center;gap:8px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:4px 12px 4px 4px}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--grad1);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}
+.user-name{font-size:13px;font-weight:600;color:#334155}
+.btn-logout{background:none;border:none;font-size:12px;color:#94a3b8;cursor:pointer;font-family:'Nunito',sans-serif}
+.btn-logout:hover{color:#ef4444}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+
+/* ── HOME PAGE ── */
+.hero{background:var(--grad1);min-height:560px;position:relative;overflow:hidden;display:flex;align-items:center;padding:60px 24px}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='28'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.15}
+.hero-orb1{width:400px;height:400px;background:#7c3aed;top:-100px;right:-100px}
+.hero-orb2{width:300px;height:300px;background:#06b6d4;bottom:-80px;left:20%}
+.hero-content{position:relative;max-width:1280px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:6px 16px;color:#fff;font-size:13px;font-weight:600;margin-bottom:20px;backdrop-filter:blur(10px)}
+.hero-badge-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+.hero h1{font-size:clamp(32px,4vw,52px);font-weight:800;color:#fff;line-height:1.15;margin-bottom:20px}
+.hero h1 span{background:linear-gradient(135deg,#fbbf24,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:rgba(255,255,255,.75);font-size:18px;line-height:1.7;margin-bottom:32px}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap}
+.btn-hero-primary{background:linear-gradient(135deg,#f97316,#f59e0b);border:none;color:#fff;padding:14px 32px;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer;transition:all .3s;font-family:'Nunito',sans-serif;box-shadow:0 8px 24px rgba(249,115,22,.3)}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(249,115,22,.4)}
+.btn-hero-secondary{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;padding:14px 32px;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer;transition:all .3s;font-family:'Nunito',sans-serif;backdrop-filter:blur(10px)}
+.btn-hero-secondary:hover{background:rgba(255,255,255,.25)}
+.hero-visual{display:flex;flex-direction:column;gap:16px}
+.hero-stat-card{background:rgba(255,255,255,.1);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:20px 24px;display:flex;align-items:center;gap:16px;transition:transform .3s}
+.hero-stat-card:hover{transform:translateX(-4px)}
+.hero-stat-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.hero-stat-num{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:#fff}
+.hero-stat-label{color:rgba(255,255,255,.65);font-size:13px}
+.hero-stat-badge{margin-left:auto;background:rgba(74,222,128,.2);color:#4ade80;border:1px solid rgba(74,222,128,.3);border-radius:50px;padding:4px 10px;font-size:12px;font-weight:700}
+
+/* STATS BAR */
+.stats-bar{background:#fff;border-bottom:1px solid #e2e8f0}
+.stats-bar-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);padding:32px 24px;gap:24px}
+.stat-item{text-align:center;position:relative}
+.stat-item:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:#e2e8f0}
+.stat-num{font-family:'Sora',sans-serif;font-size:32px;font-weight:800;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:13px;color:#64748b;margin-top:4px}
+
+/* CATEGORY CARDS */
+.section{padding:64px 24px}
+.section-inner{max-width:1280px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:48px}
+.section-eyebrow{display:inline-block;background:linear-gradient(135deg,#eff6ff,#f0f9ff);border:1px solid #bfdbfe;color:#1a56db;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px 16px;border-radius:50px;margin-bottom:16px}
+.section h2{font-size:clamp(24px,3vw,40px);font-weight:800;color:#0f172a;margin-bottom:12px}
+.section p{color:#64748b;font-size:16px;max-width:600px;margin:0 auto;line-height:1.7}
+.cat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.cat-card{border-radius:24px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;border:2px solid transparent}
+.cat-card::before{content:'';position:absolute;inset:0;opacity:0;background:rgba(255,255,255,.2);transition:opacity .3s}
+.cat-card:hover::before{opacity:1}
+.cat-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.15)}
+.cat-icon{font-size:40px;margin-bottom:12px;display:block}
+.cat-name{font-weight:800;font-size:15px;margin-bottom:4px}
+.cat-count{font-size:12px;opacity:.8}
+.cat-transport{background:linear-gradient(135deg,#f97316,#fb923c)}
+.cat-health{background:linear-gradient(135deg,#f43f5e,#fb7185)}
+.cat-education{background:linear-gradient(135deg,#1a56db,#60a5fa)}
+.cat-employment{background:linear-gradient(135deg,#10b981,#34d399)}
+.cat-women{background:linear-gradient(135deg,#db2777,#f472b6)}
+.cat-card *{color:#fff}
+
+/* HOW IT WORKS */
+.how-section{background:linear-gradient(135deg,#f8faff,#f0f4ff);padding:64px 24px}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1280px;margin:48px auto 0}
+.step-card{background:#fff;border-radius:24px;padding:32px;position:relative;overflow:hidden;border:1px solid #e2e8f0;transition:all .3s}
+.step-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.1)}
+.step-num{position:absolute;top:20px;right:20px;font-family:'Sora',sans-serif;font-size:64px;font-weight:800;color:#f1f5f9;line-height:1}
+.step-icon-wrap{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:20px;position:relative;z-index:1}
+.step-card h3{font-size:20px;font-weight:700;color:#0f172a;margin-bottom:8px;position:relative;z-index:1}
+.step-card p{color:#64748b;line-height:1.7;font-size:14px;position:relative;z-index:1}
+
+/* SENTIMENT PREVIEW */
+.sentiment-section{padding:64px 24px;background:#fff}
+.sentiment-inner{max-width:1280px;margin:0 auto}
+.sentiment-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.sentiment-info h2{font-size:36px;font-weight:800;color:#0f172a;margin-bottom:12px}
+.sentiment-info p{color:#64748b;line-height:1.7;margin-bottom:32px}
+.sent-bar{margin-bottom:16px}
+.sent-bar-header{display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;font-weight:600}
+.sent-bar-track{height:10px;background:#f1f5f9;border-radius:999px;overflow:hidden}
+.sent-bar-fill{height:100%;border-radius:999px;transition:width 1s ease}
+.ministry-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mini-card{border-radius:16px;padding:16px;border:1px solid transparent}
+.mini-card h4{font-size:13px;font-weight:700;margin-bottom:10px}
+.mini-bars{display:flex;gap:4px;height:48px;align-items:flex-end}
+.mini-bar{flex:1;border-radius:6px 6px 0 0;min-height:8px;transition:height .6s ease}
+.mini-labels{display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-top:4px}
+
+/* SCHEMES PAGE */
+.page-hero{padding:48px 24px 32px;background:linear-gradient(135deg,#0f2d5a,#1a56db)}
+.page-hero h1{font-size:36px;font-weight:800;color:#fff;margin-bottom:8px}
+.page-hero p{color:rgba(255,255,255,.7);font-size:16px}
+.schemes-container{max-width:1280px;margin:0 auto;padding:32px 24px}
+.search-bar-wrap{position:relative;margin-bottom:24px}
+.search-bar-wrap svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:#94a3b8}
+#schemeSearch{width:100%;padding:14px 16px 14px 48px;border:2px solid #e2e8f0;border-radius:16px;font-size:15px;font-family:'Nunito',sans-serif;outline:none;background:#fff;transition:border .2s}
+#schemeSearch:focus{border-color:#1a56db;box-shadow:0 0 0 4px rgba(26,86,219,.08)}
+.filter-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+.pill{padding:8px 20px;border-radius:50px;border:2px solid #e2e8f0;background:#fff;font-weight:700;font-size:13px;color:#64748b;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+.pill:hover{border-color:#1a56db;color:#1a56db}
+.pill.active{background:linear-gradient(135deg,#1a56db,#4338ca);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(26,86,219,.3)}
+.schemes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
+.scheme-card{background:#fff;border-radius:24px;overflow:hidden;border:1px solid #e2e8f0;transition:all .3s;cursor:pointer}
+.scheme-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(0,0,0,.1);border-color:transparent}
+.scheme-card-top{height:6px}
+.scheme-card-body{padding:24px}
+.scheme-badges{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.scheme-badge{font-size:12px;font-weight:700;padding:4px 12px;border-radius:50px}
+.scheme-deadline{font-size:11px;font-weight:600;color:#f97316;background:#fff7ed;border:1px solid #fed7aa;padding:3px 10px;border-radius:50px}
+.scheme-card h3{font-size:18px;font-weight:700;color:#0f172a;margin-bottom:4px;transition:color .2s}
+.scheme-card:hover h3{color:#1a56db}
+.scheme-ministry{font-size:12px;color:#94a3b8;font-weight:600;margin-bottom:10px}
+.scheme-desc{color:#64748b;font-size:14px;line-height:1.6;margin-bottom:20px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-override:vertical;overflow:hidden}
+.btn-view{width:100%;padding:11px;background:linear-gradient(135deg,#1a56db,#4338ca);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+.btn-view:hover{opacity:.9}
+
+/* DETAIL PAGE */
+.detail-container{max-width:900px;margin:0 auto;padding:32px 24px}
+.breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:24px;font-size:14px}
+.breadcrumb-link{color:#1a56db;cursor:pointer;font-weight:600}
+.breadcrumb-link:hover{text-decoration:underline}
+.breadcrumb-sep{color:#cbd5e1}
+.breadcrumb-cur{color:#64748b}
+.detail-card{background:#fff;border-radius:24px;padding:32px;border:1px solid #e2e8f0;margin-bottom:24px}
+.detail-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.detail-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.detail-title{font-size:28px;font-weight:800;color:#0f172a;margin-bottom:4px}
+.detail-ministry{font-size:14px;color:#94a3b8;font-weight:600}
+.btn-fav{display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:12px;border:2px solid #e2e8f0;background:#fff;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;color:#64748b;white-space:nowrap}
+.btn-fav:hover{border-color:#f59e0b;color:#f59e0b}
+.btn-fav.saved{background:#fffbeb;border-color:#f59e0b;color:#d97706}
+.detail-desc{color:#475569;line-height:1.8;font-size:15px;margin-bottom:24px}
+.btn-official{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#f97316,#f59e0b);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;transition:all .2s;font-family:'Nunito',sans-serif}
+.btn-official:hover{opacity:.9;transform:translateY(-1px)}
+
+/* SENTIMENT BARS IN DETAIL */
+.sent-summary{background:#f8faff;border-radius:16px;padding:24px;border:1px solid #dbeafe;margin-bottom:24px}
+.sent-summary h3{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:16px}
+.sent-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sent-col{border-radius:14px;padding:16px;text-align:center}
+.sent-col-num{font-family:'Sora',sans-serif;font-size:28px;font-weight:800}
+.sent-col-label{font-size:12px;font-weight:600;margin-top:4px}
+
+/* COMMENTS */
+.comments-card{background:#fff;border-radius:24px;padding:32px;border:1px solid #e2e8f0}
+.comments-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.comments-head h3{font-size:18px;font-weight:700;color:#0f172a;display:flex;align-items:center;gap:8px}
+.sort-select{padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;color:#64748b;outline:none;cursor:pointer}
+.sort-select:focus{border-color:#1a56db}
+.add-comment-wrap{display:flex;gap:12px;margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid #f1f5f9}
+.user-av-sm{width:40px;height:40px;border-radius:50%;background:var(--grad1);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0}
+.comment-input-area{flex:1}
+.comment-textarea{width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:14px;font-family:'Nunito',sans-serif;font-size:14px;resize:none;outline:none;transition:border .2s;color:#334155}
+.comment-textarea:focus{border-color:#1a56db;box-shadow:0 0 0 4px rgba(26,86,219,.06)}
+.comment-textarea:disabled{background:#f8fafc;color:#94a3b8}
+.comment-meta{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.comment-remaining{font-size:12px;color:#94a3b8;font-weight:600}
+.btn-post{padding:8px 20px;background:linear-gradient(135deg,#1a56db,#4338ca);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s}
+.btn-post:hover{opacity:.9}
+.btn-post:disabled{opacity:.4;cursor:not-allowed}
+.sign-in-prompt{background:linear-gradient(135deg,#f8faff,#eff6ff);border:1.5px dashed #bfdbfe;border-radius:16px;padding:24px;text-align:center;margin-bottom:24px}
+.sign-in-prompt p{color:#64748b;font-size:14px;margin-bottom:12px}
+.btn-signin-prompt{padding:10px 24px;background:linear-gradient(135deg,#1a56db,#4338ca);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;font-family:'Nunito',sans-serif}
+.comment-item{display:flex;gap:12px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid #f1f5f9}
+.comment-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.comment-av{width:40px;height:40px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.comment-body{flex:1}
+.comment-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.comment-name{font-weight:700;font-size:14px;color:#0f172a}
+.comment-time{font-size:12px;color:#94a3b8}
+.sent-pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:50px}
+.sent-pill.positive{background:#d1fae5;color:#065f46}
+.sent-pill.neutral{background:#fef3c7;color:#92400e}
+.sent-pill.negative{background:#fee2e2;color:#991b1b}
+.comment-text{font-size:14px;color:#475569;line-height:1.7;margin-bottom:10px}
+.reaction-btns{display:flex;gap:6px;flex-wrap:wrap}
+.react-btn{display:flex;align-items:center;gap:4px;padding:4px 10px;border:1.5px solid #e2e8f0;border-radius:50px;font-size:13px;background:#fff;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;font-weight:600}
+.react-btn:hover{border-color:#1a56db;background:#eff6ff}
+.react-btn.reacted{background:#eff6ff;border-color:#1a56db;color:#1a56db}
+
+/* FAVORITES PAGE */
+.fav-empty{text-align:center;padding:80px 24px}
+.fav-empty-icon{font-size:72px;margin-bottom:24px;display:block}
+.fav-empty h2{font-size:24px;font-weight:700;color:#0f172a;margin-bottom:8px}
+.fav-empty p{color:#64748b;margin-bottom:24px}
+.btn-browse{padding:12px 28px;background:linear-gradient(135deg,#1a56db,#4338ca);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;font-family:'Nunito',sans-serif}
+
+/* AUTH PAGES */
+.auth-page{min-height:calc(100vh - 120px);display:flex;align-items:center;justify-content:center;padding:40px 24px;background:linear-gradient(135deg,#f0f4ff,#fdf4ff)}
+.auth-box{background:#fff;border-radius:28px;box-shadow:0 24px 64px rgba(0,0,0,.08);padding:40px;width:100%;max-width:480px;border:1px solid #e2e8f0}
+.auth-logo{text-align:center;margin-bottom:28px}
+.auth-logo-circle{width:64px;height:64px;background:var(--grad1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin:0 auto 12px}
+.auth-logo h2{font-size:22px;font-weight:800;color:#0f172a}
+.auth-logo p{color:#64748b;font-size:14px}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px}
+.form-input{width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'Nunito',sans-serif;outline:none;transition:border .2s;color:#1e293b}
+.form-input:focus{border-color:#1a56db;box-shadow:0 0 0 4px rgba(26,86,219,.07)}
+.form-input.error{border-color:#ef4444;background:#fff5f5}
+.form-error{font-size:12px;color:#ef4444;margin-top:4px;font-weight:600}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-submit{width:100%;padding:14px;background:linear-gradient(135deg,#1a56db,#4338ca);color:#fff;border:none;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;margin-top:8px}
+.btn-submit:hover{opacity:.9;transform:translateY(-1px)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.auth-footer{text-align:center;margin-top:20px;font-size:14px;color:#64748b}
+.auth-link{color:#1a56db;font-weight:700;cursor:pointer;text-decoration:none}
+.auth-link:hover{text-decoration:underline}
+.demo-tip{background:#fefce8;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:13px;color:#92400e;margin-top:16px}
+.demo-tip code{background:#fef08a;padding:1px 6px;border-radius:4px;font-weight:700}
+.success-box{text-align:center;padding:20px}
+.success-icon{width:80px;height:80px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:40px}
+.success-box h3{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:8px}
+.success-box p{color:#64748b;margin-bottom:20px}
+
+/* ADMIN PAGE */
+.admin-header{background:linear-gradient(135deg,#0f2d5a,#1a56db,#4338ca);padding:40px 24px}
+.admin-header-inner{max-width:1280px;margin:0 auto}
+.admin-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:5px 14px;color:#fff;font-size:12px;font-weight:700;margin-bottom:12px}
+.admin-header h1{font-size:32px;font-weight:800;color:#fff;margin-bottom:8px}
+.admin-header p{color:rgba(255,255,255,.65);font-size:15px}
+.admin-container{max-width:1280px;margin:0 auto;padding:32px 24px}
+.admin-tabs{display:flex;gap:4px;background:#f1f5f9;border-radius:14px;padding:4px;width:fit-content;margin-bottom:32px}
+.admin-tab{padding:10px 24px;border-radius:10px;border:none;background:none;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;color:#64748b}
+.admin-tab.active{background:#fff;color:#1a56db;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.admin-tab-content{display:none}
+.admin-tab-content.active{display:block}
+.stats-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.admin-stat-card{border-radius:20px;padding:20px;position:relative;overflow:hidden}
+.admin-stat-card::after{content:attr(data-icon);position:absolute;bottom:-10px;right:-10px;font-size:64px;opacity:.15;line-height:1}
+.admin-stat-num{font-family:'Sora',sans-serif;font-size:32px;font-weight:800;color:#fff;margin-bottom:4px}
+.admin-stat-label{font-size:13px;color:rgba(255,255,255,.8);font-weight:600;margin-bottom:8px}
+.admin-stat-change{font-size:12px;color:rgba(255,255,255,.6);font-weight:600}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.chart-card{background:#fff;border-radius:20px;padding:24px;border:1px solid #e2e8f0}
+.chart-card h3{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:20px}
+.ministry-bars{background:#fff;border-radius:20px;padding:24px;border:1px solid #e2e8f0;margin-bottom:24px}
+.ministry-bars h3{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:20px}
+.ministry-row{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.ministry-name{width:120px;font-size:14px;font-weight:700;color:#334155;flex-shrink:0}
+.ministry-track{flex:1;height:12px;background:#f1f5f9;border-radius:999px;overflow:hidden;display:flex}
+.ministry-pos{background:linear-gradient(90deg,#10b981,#34d399);height:100%;border-radius:999px 0 0 999px;transition:width 1s ease}
+.ministry-neg{background:linear-gradient(90deg,#f43f5e,#fb7185);height:100%;border-radius:0 999px 999px 0;transition:width 1s ease}
+.ministry-pcts{display:flex;gap:12px;width:80px;flex-shrink:0;font-size:12px;font-weight:700}
+.ministry-pcts .pos{color:#059669}
+.ministry-pcts .neg{color:#dc2626}
+.ministry-status{width:100px;flex-shrink:0}
+.status-pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;display:inline-block}
+.status-excellent{background:#d1fae5;color:#065f46}
+.status-moderate{background:#fef3c7;color:#92400e}
+.status-attention{background:#fee2e2;color:#991b1b}
+.comments-split{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.comments-panel{background:#fff;border-radius:20px;padding:24px;border:1px solid #e2e8f0}
+.comments-panel h3{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.panel-comment{padding:14px;border-radius:14px;margin-bottom:10px;border:1px solid transparent}
+.panel-comment.positive{background:#f0fdf4;border-color:#bbf7d0}
+.panel-comment.negative{background:#fff5f5;border-color:#fecaca}
+.panel-rank{font-size:11px;font-weight:800;margin-bottom:6px;opacity:.5}
+.panel-user{font-size:13px;font-weight:700;color:#0f172a;margin-bottom:4px}
+.panel-text{font-size:13px;color:#475569;line-height:1.5}
+.panel-likes{font-size:12px;font-weight:700;margin-top:6px}
+
+/* NOTIF DROPDOWN */
+.notif-wrap{position:relative}
+.notif-dropdown{position:absolute;right:0;top:calc(100% + 8px);width:320px;background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 16px 48px rgba(0,0,0,.12);z-index:1000;overflow:hidden}
+.notif-head{padding:14px 18px;border-bottom:1px solid #f1f5f9;font-size:15px;font-weight:700;color:#0f172a}
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:12px 18px;border-bottom:1px solid #f8fafc;transition:background .15s;cursor:pointer}
+.notif-item:hover{background:#f8fafc}
+.notif-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.notif-content{flex:1}
+.notif-title{font-size:13px;font-weight:700;color:#0f172a;margin-bottom:2px}
+.notif-msg{font-size:12px;color:#64748b;line-height:1.4}
+.notif-time{font-size:11px;color:#94a3b8;margin-top:3px}
+.notif-hidden{display:none}
+
+/* LOADING SPINNER */
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* FOOTER */
+footer{background:linear-gradient(135deg,#0f2d5a,#1e1b4b);color:#fff;padding:48px 24px 24px}
+.footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:48px;margin-bottom:32px}
+.footer-logo{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;margin-bottom:12px}
+.footer-desc{color:rgba(255,255,255,.55);font-size:14px;line-height:1.7}
+.footer-col h4{font-weight:700;font-size:15px;margin-bottom:16px;color:rgba(255,255,255,.9)}
+.footer-links{display:flex;flex-direction:column;gap:8px;list-style:none}
+.footer-links a{color:rgba(255,255,255,.55);font-size:14px;text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:20px;text-align:center;font-size:13px;color:rgba(255,255,255,.4)}
+
+/* ANIMATIONS */
+.fade-in{opacity:0;transform:translateY(20px);transition:all .5s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.slide-in-left{animation:slideInLeft .5s ease forwards}
+.slide-in-right{animation:slideInRight .5s ease forwards}
+.scale-in{animation:scaleIn .3s ease forwards}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero-content{grid-template-columns:1fr}.hero-visual{display:none}
+  .cat-grid{grid-template-columns:repeat(3,1fr)}
+  .steps-grid{grid-template-columns:1fr}
+  .sentiment-grid{grid-template-columns:1fr}
+  .charts-row{grid-template-columns:1fr}
+  .comments-split{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .cat-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-bar-inner{grid-template-columns:repeat(2,1fr)}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP GOV BAR -->
+<div class="topbar">🇮🇳&nbsp; भारत सरकार &nbsp;|&nbsp; Government of India &nbsp;·&nbsp; Official Public Sentiment Portal &nbsp;·&nbsp; Jan Vimarsh</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="goTo('home')">
+      <div class="nav-logo-circle">भा</div>
+      <div class="nav-logo-text">
+        <div class="nav-logo-title">Jan Vimarsh Portal</div>
+        <div class="nav-logo-sub">Public Sentiment Analysis</div>
+      </div>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <button class="nav-btn active" id="navHome" onclick="goTo('home')">🏠 Home</button>
+      <button class="nav-btn" id="navSchemes" onclick="goTo('schemes')">📋 Schemes</button>
+      <button class="nav-btn" id="navFavs" onclick="goTo('favorites')">⭐ Favourites</button>
+      <button class="nav-btn" id="navAdmin" onclick="goTo('admin')" style="display:none">📊 Admin</button>
+    </div>
+    <div class="nav-actions">
+      <div class="notif-wrap">
+        <button class="notif-btn" onclick="toggleNotif()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="notif-dropdown notif-hidden" id="notifDrop">
+          <div class="notif-head">🔔 Notifications</div>
+          <div class="notif-item"><div class="notif-icon" style="background:#fff7ed">⏰</div><div class="notif-content"><div class="notif-title">PM Awas Yojana</div><div class="notif-msg">Application deadline: March 31, 2026</div><div class="notif-time">2 hours ago</div></div></div>
+          <div class="notif-item"><div class="notif-icon" style="background:#f0fdf4">🔔</div><div class="notif-content"><div class="notif-title">Ayushman Bharat Update</div><div class="notif-msg">New hospitals added to empanelled list</div><div class="notif-time">Yesterday</div></div></div>
+          <div class="notif-item"><div class="notif-icon" style="background:#fdf4ff">📢</div><div class="notif-content"><div class="notif-title">Skill India Mission</div><div class="notif-msg">New batch registrations open for Q1 2026</div><div class="notif-time">2 days ago</div></div></div>
+          <div class="notif-item"><div class="notif-icon" style="background:#fff7ed">⏰</div><div class="notif-content"><div class="notif-title">PMGSY Phase III</div><div class="notif-msg">Contractor bids closing Feb 15, 2026</div><div class="notif-time">3 days ago</div></div></div>
+        </div>
+      </div>
+      <div id="authBtns">
+        <button class="btn-login" onclick="goTo('login')">Login</button>
+        <button class="btn-register" onclick="goTo('register')">Register</button>
+      </div>
+      <div class="user-chip" id="userChip" style="display:none">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span class="user-name" id="userName">User</span>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════ HOME PAGE ════════════════════ -->
+<div class="page active" id="page-home">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-orb hero-orb1"></div>
+    <div class="hero-orb hero-orb2"></div>
+    <div class="hero-content">
+      <div class="slide-in-left">
+        <div class="hero-badge"><span class="hero-badge-dot"></span> Live Sentiment Analysis Active</div>
+        <h1>Your Voice Shapes<br><span>Better Governance</span></h1>
+        <p>Share honest feedback on government schemes. Help ministries understand what's working and what needs to improve. Every comment counts.</p>
+        <div class="hero-btns">
+          <button class="btn-hero-primary" onclick="goTo('schemes')">Explore Schemes →</button>
+          <button class="btn-hero-secondary" onclick="goTo('register')">Give Feedback</button>
+        </div>
+      </div>
+      <div class="hero-visual slide-in-right">
+        <div class="hero-stat-card">
+          <div class="hero-stat-icon" style="background:rgba(249,115,22,.2)">📋</div>
+          <div><div class="hero-stat-num">240+</div><div class="hero-stat-label">Active Schemes</div></div>
+          <div class="hero-stat-badge">↑ 12 new</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-icon" style="background:rgba(16,185,129,.2)">👥</div>
+          <div><div class="hero-stat-num">18.4L</div><div class="hero-stat-label">Citizens Participated</div></div>
+          <div class="hero-stat-badge">↑ 24k</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-icon" style="background:rgba(96,165,250,.2)">💬</div>
+          <div><div class="hero-stat-num">52K+</div><div class="hero-stat-label">Feedbacks Collected</div></div>
+          <div class="hero-stat-badge">Live</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stats-bar-inner">
+      <div class="stat-item"><div class="stat-num" id="ctr-schemes">0</div><div class="stat-label">Government Schemes</div></div>
+      <div class="stat-item"><div class="stat-num" id="ctr-users">0</div><div class="stat-label">Registered Citizens</div></div>
+      <div class="stat-item"><div class="stat-num" id="ctr-feedback">0</div><div class="stat-label">Feedbacks Analyzed</div></div>
+      <div class="stat-item"><div class="stat-num" id="ctr-sat">0%</div><div class="stat-label">Average Satisfaction</div></div>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <section class="section" style="background:#fff">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="section-eyebrow">Browse by Ministry</div>
+        <h2>Find Schemes That Matter to You</h2>
+        <p>Explore government programs across all welfare sectors and share your experience</p>
+      </div>
+      <div class="cat-grid">
+        <div class="cat-card cat-transport fade-in" onclick="filterAndGo('Transport')"><span class="cat-icon">🚌</span><div class="cat-name">Transport</div><div class="cat-count">42 schemes</div></div>
+        <div class="cat-card cat-health fade-in" onclick="filterAndGo('Health')"><span class="cat-icon">🏥</span><div class="cat-name">Health</div><div class="cat-count">38 schemes</div></div>
+        <div class="cat-card cat-education fade-in" onclick="filterAndGo('Education')"><span class="cat-icon">📚</span><div class="cat-name">Education</div><div class="cat-count">55 schemes</div></div>
+        <div class="cat-card cat-employment fade-in" onclick="filterAndGo('Employment')"><span class="cat-icon">💼</span><div class="cat-name">Employment</div><div class="cat-count">47 schemes</div></div>
+        <div class="cat-card cat-women fade-in" onclick="filterAndGo('Women Welfare')"><span class="cat-icon">🌸</span><div class="cat-name">Women Welfare</div><div class="cat-count">31 schemes</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="section-eyebrow">Simple Process</div>
+        <h2>How Jan Vimarsh Works</h2>
+        <p>Three easy steps to make your voice count in shaping national policy</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card fade-in">
+          <span class="step-num">01</span>
+          <div class="step-icon-wrap" style="background:#eff6ff">👤</div>
+          <h3>Register & Verify</h3>
+          <p>Create your account with Aadhaar-linked mobile for verified, authentic feedback that carries real weight in policy decisions.</p>
+        </div>
+        <div class="step-card fade-in">
+          <span class="step-num">02</span>
+          <div class="step-icon-wrap" style="background:#f0fdf4">🔍</div>
+          <h3>Find Your Scheme</h3>
+          <p>Browse schemes by category or ministry. Search for specific programs relevant to you and your community.</p>
+        </div>
+        <div class="step-card fade-in">
+          <span class="step-num">03</span>
+          <div class="step-icon-wrap" style="background:#fdf4ff">💬</div>
+          <h3>Share Feedback</h3>
+          <p>Leave comments and emoji reactions. Watch how collective public sentiment shapes ministry decisions in real-time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE SENTIMENT PREVIEW -->
+  <section class="sentiment-section">
+    <div class="sentiment-inner">
+      <div class="section-header">
+        <div class="section-eyebrow">Real-time Insights</div>
+        <h2>Live Public Sentiment Dashboard</h2>
+        <p>AI-powered analysis of thousands of daily citizen feedbacks across all government ministries</p>
+      </div>
+      <div class="sentiment-grid">
+        <div class="sentiment-info">
+          <div class="sent-bar">
+            <div class="sent-bar-header"><span style="color:#059669;font-weight:700">✅ Positive Feedback</span><span style="color:#059669;font-weight:800">68%</span></div>
+            <div class="sent-bar-track"><div class="sent-bar-fill" style="width:68%;background:linear-gradient(90deg,#10b981,#34d399)"></div></div>
+          </div>
+          <div class="sent-bar">
+            <div class="sent-bar-header"><span style="color:#d97706;font-weight:700">⚪ Neutral Feedback</span><span style="color:#d97706;font-weight:800">20%</span></div>
+            <div class="sent-bar-track"><div class="sent-bar-fill" style="width:20%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
+          </div>
+          <div class="sent-bar">
+            <div class="sent-bar-header"><span style="color:#dc2626;font-weight:700">❌ Negative Feedback</span><span style="color:#dc2626;font-weight:800">12%</span></div>
+            <div class="sent-bar-track"><div class="sent-bar-fill" style="width:12%;background:linear-gradient(90deg,#ef4444,#fb7185)"></div></div>
+          </div>
+          <div style="margin-top:28px;padding:20px;background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border-radius:16px;border:1px solid #bbf7d0">
+            <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:4px">📈 This month's improvement</div>
+            <div style="font-size:32px;font-weight:800;color:#059669;font-family:'Sora',sans-serif">+5.2%</div>
+            <div style="font-size:13px;color:#6ee7b7">Overall positive sentiment vs last month</div>
+          </div>
+        </div>
+        <div class="ministry-mini-grid">
+          <div class="mini-card" style="background:#fff;border:1.5px solid #dbeafe;border-radius:16px;padding:16px">
+            <h4 style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:8px">🏥 Health</h4>
+            <div class="mini-bars"><div class="mini-bar" style="background:#10b981;height:74%"></div><div class="mini-bar" style="background:#ef4444;height:26%"></div></div>
+            <div class="mini-labels"><span style="color:#059669;font-size:11px;font-weight:700">74%</span><span style="color:#dc2626;font-size:11px;font-weight:700">26%</span></div>
+          </div>
+          <div class="mini-card" style="background:#fff;border:1.5px solid #d1fae5;border-radius:16px;padding:16px">
+            <h4 style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:8px">📚 Education</h4>
+            <div class="mini-bars"><div class="mini-bar" style="background:#10b981;height:81%"></div><div class="mini-bar" style="background:#ef4444;height:19%"></div></div>
+            <div class="mini-labels"><span style="color:#059669;font-size:11px;font-weight:700">81%</span><span style="color:#dc2626;font-size:11px;font-weight:700">19%</span></div>
+          </div>
+          <div class="mini-card" style="background:#fff;border:1.5px solid #fde68a;border-radius:16px;padding:16px">
+            <h4 style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:8px">💼 Employment</h4>
+            <div class="mini-bars"><div class="mini-bar" style="background:#10b981;height:68%"></div><div class="mini-bar" style="background:#ef4444;height:32%"></div></div>
+            <div class="mini-labels"><span style="color:#059669;font-size:11px;font-weight:700">68%</span><span style="color:#dc2626;font-size:11px;font-weight:700">32%</span></div>
+          </div>
+          <div class="mini-card" style="background:#fff;border:1.5px solid #fce7f3;border-radius:16px;padding:16px">
+            <h4 style="font-size:13px;font-weight:700;color:#9d174d;margin-bottom:8px">🌸 Women</h4>
+            <div class="mini-bars"><div class="mini-bar" style="background:#10b981;height:79%"></div><div class="mini-bar" style="background:#ef4444;height:21%"></div></div>
+            <div class="mini-labels"><span style="color:#059669;font-size:11px;font-weight:700">79%</span><span style="color:#dc2626;font-size:11px;font-weight:700">21%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════ SCHEMES PAGE ════════════════════ -->
+<div class="page" id="page-schemes">
+  <div class="page-hero">
+    <div style="max-width:1280px;margin:0 auto">
+      <h1>Government Schemes</h1>
+      <p>Browse and give feedback on welfare programs across all Indian ministries</p>
+    </div>
+  </div>
+  <div class="schemes-container">
+    <div class="search-bar-wrap">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input type="text" id="schemeSearch" placeholder="Search schemes, ministries, categories..." oninput="filterSchemes()"/>
+    </div>
+    <div class="filter-pills" id="filterPills"></div>
+    <div id="schemeCount" style="font-size:14px;color:#64748b;font-weight:600;margin-bottom:20px"></div>
+    <div class="schemes-grid" id="schemesGrid"></div>
+  </div>
+</div>
+
+<!-- ════════════════════ SCHEME DETAIL PAGE ════════════════════ -->
+<div class="page" id="page-detail">
+  <div class="detail-container">
+    <div class="breadcrumb">
+      <span class="breadcrumb-link" onclick="goTo('schemes')">Schemes</span>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-cur" id="detailBreadcrumb">Scheme Detail</span>
+    </div>
+    <div class="detail-card">
+      <div class="detail-header">
+        <div>
+          <div class="detail-badges" id="detailBadges"></div>
+          <div class="detail-title" id="detailTitle"></div>
+          <div class="detail-ministry" id="detailMinistry"></div>
+        </div>
+        <button class="btn-fav" id="favBtn" onclick="toggleFav()">☆ Save Scheme</button>
+      </div>
+      <div class="detail-desc" id="detailDesc"></div>
+      <a id="detailLink" href="#" target="_blank" class="btn-official">🌐 Visit Official Website ↗</a>
+    </div>
+    <div class="sent-summary">
+      <h3>📊 Public Sentiment for this Scheme</h3>
+      <div class="sent-3col">
+        <div class="sent-col" style="background:#f0fdf4;border:1px solid #bbf7d0"><div class="sent-col-num" style="color:#059669">65%</div><div class="sent-col-label" style="color:#065f46">Positive</div></div>
+        <div class="sent-col" style="background:#fefce8;border:1px solid #fde68a"><div class="sent-col-num" style="color:#d97706">20%</div><div class="sent-col-label" style="color:#92400e">Neutral</div></div>
+        <div class="sent-col" style="background:#fff5f5;border:1px solid #fecaca"><div class="sent-col-num" style="color:#dc2626">15%</div><div class="sent-col-label" style="color:#991b1b">Negative</div></div>
+      </div>
+    </div>
+    <div class="comments-card">
+      <div class="comments-head">
+        <h3>💬 Citizen Feedback <span id="commentCount" style="color:#94a3b8;font-size:15px"></span></h3>
+        <select class="sort-select" onchange="sortComments(this.value)">
+          <option value="latest">Latest First</option>
+          <option value="liked">Most Liked</option>
+        </select>
+      </div>
+      <div id="addCommentArea"></div>
+      <div id="commentsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ FAVORITES PAGE ════════════════════ -->
+<div class="page" id="page-favorites">
+  <div class="page-hero">
+    <div style="max-width:1280px;margin:0 auto">
+      <h1>⭐ My Saved Schemes</h1>
+      <p id="favCount">Schemes you've bookmarked for quick access</p>
+    </div>
+  </div>
+  <div class="schemes-container">
+    <div class="schemes-grid" id="favGrid"></div>
+    <div id="favEmpty" class="fav-empty" style="display:none">
+      <span class="fav-empty-icon">⭐</span>
+      <h2>No saved schemes yet</h2>
+      <p>Browse schemes and click "Save Scheme" to bookmark them here</p>
+      <button class="btn-browse" onclick="goTo('schemes')">Browse Schemes</button>
+    </div>
+    <div id="loginPromptFav" style="display:none" class="fav-empty">
+      <span class="fav-empty-icon">🔒</span>
+      <h2>Sign in to view favourites</h2>
+      <p>Save schemes you care about and access them anytime</p>
+      <button class="btn-browse" onclick="goTo('login')">Sign In</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ LOGIN PAGE ════════════════════ -->
+<div class="page" id="page-login">
+  <div class="auth-page">
+    <div class="auth-box scale-in">
+      <div class="auth-logo">
+        <div class="auth-logo-circle">भा</div>
+        <h2>Welcome Back</h2>
+        <p>Sign in to Jan Vimarsh Portal</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email / Mobile Number</label>
+        <input type="text" class="form-input" id="loginEmail" placeholder="Enter email or 10-digit phone"/>
+        <div class="form-error" id="loginEmailErr" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="loginPass" placeholder="Enter your password"/>
+        <div class="form-error" id="loginPassErr" style="display:none"></div>
+      </div>
+      <button class="btn-submit" id="loginBtn" onclick="doLogin()">Sign In</button>
+      <div class="demo-tip">
+        <strong>Demo:</strong> Use <code>admin@gov.in</code> for Admin access. Any other email for Citizen access. Any password works.
+      </div>
+      <div class="auth-footer">
+        Don't have an account? <span class="auth-link" onclick="goTo('register')">Register here</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ REGISTER PAGE ════════════════════ -->
+<div class="page" id="page-register">
+  <div class="auth-page">
+    <div class="auth-box scale-in">
+      <div id="regForm">
+        <div class="auth-logo">
+          <div class="auth-logo-circle">भा</div>
+          <h2>Create Your Account</h2>
+          <p>Join millions of citizens shaping governance</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Full Name (as per Aadhaar)</label>
+          <input type="text" class="form-input" id="regName" placeholder="Your full name"/>
+          <div class="form-error" id="regNameErr" style="display:none"></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" id="regEmail" placeholder="your@email.com"/>
+            <div class="form-error" id="regEmailErr" style="display:none"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mobile Number</label>
+            <input type="tel" class="form-input" id="regPhone" placeholder="10-digit number"/>
+            <div class="form-error" id="regPhoneErr" style="display:none"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">State</label>
+          <select class="form-input" id="regState">
+            <option value="">Select your state</option>
+            <option>Andhra Pradesh</option><option>Bihar</option><option>Delhi</option>
+            <option>Gujarat</option><option>Karnataka</option><option>Kerala</option>
+            <option>Madhya Pradesh</option><option>Maharashtra</option><option>Punjab</option>
+            <option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option>
+            <option>Uttar Pradesh</option><option>West Bengal</option>
+          </select>
+          <div class="form-error" id="regStateErr" style="display:none"></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="regPass" placeholder="Min 8 characters"/>
+            <div class="form-error" id="regPassErr" style="display:none"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" class="form-input" id="regConfirm" placeholder="Re-enter password"/>
+            <div class="form-error" id="regConfirmErr" style="display:none"></div>
+          </div>
+        </div>
+        <button class="btn-submit" id="regBtn" onclick="doRegister()">Create Account</button>
+        <div class="auth-footer">Already registered? <span class="auth-link" onclick="goTo('login')">Sign in</span></div>
+      </div>
+      <div id="regSuccess" style="display:none">
+        <div class="success-box">
+          <div class="success-icon">✅</div>
+          <h3>Registration Successful!</h3>
+          <p>Your account has been created. You can now sign in and start giving feedback on government schemes.</p>
+          <button class="btn-submit" onclick="goTo('login')">Sign In Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ ADMIN DASHBOARD ════════════════════ -->
+<div class="page" id="page-admin">
+  <div class="admin-header">
+    <div class="admin-header-inner">
+      <div class="admin-badge">🔒 Government Access Only</div>
+      <h1>Sentiment Analytics Dashboard</h1>
+      <p>Real-time public sentiment monitoring — Ministry Intelligence Portal</p>
+    </div>
+  </div>
+  <div class="admin-container">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('overview',this)">📊 Overview</button>
+      <button class="admin-tab" onclick="switchAdminTab('comments',this)">💬 Top Comments</button>
+      <button class="admin-tab" onclick="switchAdminTab('ministry',this)">🏛️ Ministry View</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="admin-tab-content active" id="tab-overview">
+      <div class="stats-cards">
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#1a56db,#4338ca)" data-icon="📋"><div class="admin-stat-num">240</div><div class="admin-stat-label">Total Schemes</div><div class="admin-stat-change">↑ 12 this month</div></div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#7c3aed,#9333ea)" data-icon="💬"><div class="admin-stat-num">52,841</div><div class="admin-stat-label">Total Comments</div><div class="admin-stat-change">↑ 2,103 this week</div></div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#10b981,#0d9488)" data-icon="👍"><div class="admin-stat-num">1.84L</div><div class="admin-stat-label">Total Reactions</div><div class="admin-stat-change">↑ 8,451 this week</div></div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#f97316,#f59e0b)" data-icon="📈"><div class="admin-stat-num">68%</div><div class="admin-stat-label">Positive Rate</div><div class="admin-stat-change">↑ 3% vs last month</div></div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#06b6d4,#0ea5e9)" data-icon="👥"><div class="admin-stat-num">18.4L</div><div class="admin-stat-label">Active Users</div><div class="admin-stat-change">↑ 24K this month</div></div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#f43f5e,#db2777)" data-icon="⚠️"><div class="admin-stat-num">127</div><div class="admin-stat-label">Negative Alerts</div><div class="admin-stat-change">↓ 14 resolved</div></div>
+      </div>
+      <div class="charts-row">
+        <div class="chart-card"><h3>📈 Sentiment Trend — Last 7 Months</h3><canvas id="trendChart" height="220"></canvas></div>
+        <div class="chart-card"><h3>🏛️ Ministry Sentiment Breakdown</h3><canvas id="ministryChart" height="220"></canvas></div>
+      </div>
+      <div class="ministry-bars">
+        <h3>📊 Ministry-wise Positive Rate (Detailed)</h3>
+        <div id="ministryBarsDetail"></div>
+      </div>
+    </div>
+
+    <!-- COMMENTS TAB -->
+    <div class="admin-tab-content" id="tab-comments">
+      <div class="comments-split" id="commentsPanel"></div>
+    </div>
+
+    <!-- MINISTRY TAB -->
+    <div class="admin-tab-content" id="tab-ministry">
+      <div id="ministryDetailCards"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="mainFooter">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">🏛️ Jan Vimarsh Portal</div>
+      <p class="footer-desc">An initiative by the Government of India to collect and analyze public sentiment on government schemes and ministries through AI-powered feedback.</p>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <ul class="footer-links">
+        <li><a href="https://india.gov.in" target="_blank">india.gov.in</a></li>
+        <li><a href="https://mygov.in" target="_blank">mygov.in</a></li>
+        <li><a href="https://data.gov.in" target="_blank">data.gov.in</a></li>
+        <li><a href="https://pgportal.gov.in" target="_blank">pgportal.gov.in</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact & Help</h4>
+      <ul class="footer-links">
+        <li><a href="#">Helpline: 1800-XXX-XXXX</a></li>
+        <li><a href="#">feedback@janvimarsh.gov.in</a></li>
+        <li><a href="#">Mon–Sat, 9 AM – 6 PM IST</a></li>
+        <li><a href="#">Grievance Portal</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Government of India. All rights reserved. | Content owned by Ministry of Electronics & Information Technology.</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════
+const SCHEMES=[
+  {id:1,title:"PM Awas Yojana",category:"Housing",ministry:"Housing & Urban Affairs",description:"Affordable housing for all urban and rural poor citizens by 2024. Provides financial assistance for construction of houses.",details:"Under PM Awas Yojana, eligible beneficiaries receive up to ₹2.5 lakh subsidy for house construction. The scheme targets Economically Weaker Sections (EWS) and Low Income Groups (LIG). A total of 2 crore houses are targeted in rural areas. Beneficiaries receive DBT to their accounts in installments.",link:"https://pmaymis.gov.in/",deadline:"Mar 2026",color:"#7c3aed"},
+  {id:2,title:"Ayushman Bharat PM-JAY",category:"Health",ministry:"Health & Family Welfare",description:"World's largest health insurance providing ₹5 lakh annual cover to 10.74 crore poor families.",details:"Ayushman Bharat PM-JAY provides health coverage of up to ₹5 lakh per family per year. Over 1,929 medical procedures covered across 24 specialties. Cashless treatment at empanelled hospitals. Pre and post-hospitalization expenses covered.",link:"https://pmjay.gov.in/",deadline:"Ongoing",color:"#f43f5e"},
+  {id:3,title:"PM Kisan Samman Nidhi",category:"Employment",ministry:"Agriculture",description:"Direct income support of ₹6,000 per year to all farmer families in three installments via DBT.",details:"PM-KISAN provides income support of ₹6,000/year in 3 installments of ₹2,000 every 4 months. Over 11 crore farmers registered. Aadhaar seeding and land records are mandatory for enrollment.",link:"https://pmkisan.gov.in/",deadline:"Ongoing",color:"#10b981"},
+  {id:4,title:"Beti Bachao Beti Padhao",category:"Women Welfare",ministry:"Women & Child Development",description:"Campaign to address declining child sex ratio and promote welfare and education of the girl child.",details:"BBBP aims to prevent gender-biased sex selective elimination and ensure survival, protection and education of the girl child across all 640 districts. Key initiatives include awareness campaigns, scholarships, and strict enforcement.",link:"https://wcd.nic.in/bbbp-schemes",deadline:"Ongoing",color:"#db2777"},
+  {id:5,title:"DIKSHA Digital Platform",category:"Education",ministry:"Education",description:"National platform offering digital content, teacher training, and e-learning resources for school students.",details:"DIKSHA (Digital Infrastructure for Knowledge Sharing) offers e-content in 36+ languages, QR-coded textbooks, teacher training resources, and assessments. Supports 5,000+ textbooks across India.",link:"https://diksha.gov.in/",deadline:"Ongoing",color:"#1a56db"},
+  {id:6,title:"PMGSY Rural Roads",category:"Transport",ministry:"Rural Development",description:"Connectivity to unconnected habitations through all-weather roads, improving rural mobility.",details:"PMGSY aims to provide all-weather road connectivity to unconnected rural habitations. Phase III targets upgradation of 1.25 lakh km of roads. Over 7 lakh habitations connected. Geotagging of assets is mandatory.",link:"https://pmgsy.nic.in/",deadline:"2025",color:"#f97316"},
+  {id:7,title:"Sukanya Samridhi Yojana",category:"Women Welfare",ministry:"Finance",description:"Small savings scheme for girl child with 8.2% interest rate and tax benefits for her future.",details:"SSY is a small deposit scheme for girl child below 10 years. Current interest rate: 8.2% p.a. Minimum ₹250 and maximum ₹1.5 lakh per year. Account matures 21 years from date of opening.",link:"https://www.nsiindia.gov.in/",deadline:"Ongoing",color:"#9333ea"},
+  {id:8,title:"Skill India Mission",category:"Employment",ministry:"Skill Development",description:"Nationwide initiative to train over 40 crore people in industry-relevant skills through PMKVY.",details:"Skill India encompasses PMKVY, National Apprenticeship Promotion Scheme, and Jan Shikshan Sansthan. PMKVY has trained 1.37 crore+ candidates. Free certified training with placement assistance.",link:"https://www.skillindia.gov.in/",deadline:"Ongoing",color:"#059669"},
+  {id:9,title:"Metro Rail Expansion",category:"Transport",ministry:"Housing & Urban Affairs",description:"Rapid expansion of metro networks across Tier-1 and Tier-2 cities to reduce urban congestion.",details:"India's metro network has expanded to 862+ km across 20 cities. Expansion ongoing in Delhi, Mumbai, Bengaluru, Hyderabad. Focus on last-mile connectivity and green energy in metro operations.",link:"https://mohua.gov.in/",deadline:"2027",color:"#0d9488"},
+  {id:10,title:"Mid-Day Meal Scheme",category:"Education",ministry:"Education",description:"Free hot cooked meals for school children to boost enrollment and attendance in government schools.",details:"PM POSHAN covers students in Classes I–VIII of government and aided schools. 11.8 crore+ students across 11.2 lakh schools benefit daily. At least 450 calories and 12g protein for primary children.",link:"https://pmposhan.education.gov.in/",deadline:"Ongoing",color:"#2563eb"},
+  {id:11,title:"AMRUT Urban Mission",category:"Transport",ministry:"Housing & Urban Affairs",description:"Urban transformation covering water supply, sewage, transport and urban greening in 500 cities.",details:"AMRUT focuses on ensuring basic infrastructure for all in 500 cities. Covers water supply, sewage, urban transport, parks. AMRUT 2.0 aims to make all statutory towns water-secure.",link:"https://amrut.gov.in/",deadline:"2026",color:"#ea580c"},
+  {id:12,title:"Janani Suraksha Yojana",category:"Health",ministry:"Health & Family Welfare",description:"Safe motherhood intervention promoting institutional delivery among poor pregnant women.",details:"JSY promotes institutional delivery by providing cash incentives to pregnant women. Eligible BPL mothers receive ₹1,400 (rural) on delivery in government facility. Significantly reduces maternal and infant mortality.",link:"https://nhm.gov.in/",deadline:"Ongoing",color:"#dc2626"},
+];
+
+const BADGE_COLORS={
+  Health:{bg:"#fff5f5",color:"#991b1b"},
+  Education:{bg:"#eff6ff",color:"#1e40af"},
+  Employment:{bg:"#f0fdf4",color:"#065f46"},
+  Transport:{bg:"#fff7ed",color:"#92400e"},
+  "Women Welfare":{bg:"#fdf2f8",color:"#831843"},
+  Housing:{bg:"#faf5ff",color:"#581c87"},
+};
+
+const COMMENTS_DATA={
+  1:[
+    {id:101,user:"Ramesh K.",avatar:"RK",avColor:"#7c3aed",text:"Got my house sanctioned after years of waiting. The online process was smooth once documents were uploaded correctly.",reactions:{"👍":24,"😊":12,"👎":2,"😡":0},time:"2 days ago",sentiment:"positive"},
+    {id:102,user:"Sunita Devi",avatar:"SD",avColor:"#db2777",text:"The subsidy amount is helpful but disbursement took 8 months. Need faster processing at ground level.",reactions:{"👍":18,"😊":5,"👎":3,"😡":4},time:"5 days ago",sentiment:"neutral"},
+    {id:103,user:"Mohan Lal",avatar:"ML",avColor:"#f97316",text:"Rejected twice due to document issues. The online portal is very confusing for rural applicants who aren't tech-savvy.",reactions:{"👍":7,"😊":1,"👎":14,"😡":22},time:"1 week ago",sentiment:"negative"},
+  ],
+  2:[
+    {id:201,user:"Priya Sharma",avatar:"PS",avColor:"#f43f5e",text:"Ayushman card saved my family ₹3 lakhs on my mother's surgery. Truly life-saving government scheme!",reactions:{"👍":45,"😊":31,"👎":1,"😡":0},time:"1 day ago",sentiment:"positive"},
+    {id:202,user:"Vijay R.",avatar:"VR",avColor:"#1a56db",text:"Several private hospitals in our area refuse to accept the card. Need stricter enforcement of empanelment rules.",reactions:{"👍":33,"😊":4,"👎":5,"😡":18},time:"3 days ago",sentiment:"negative"},
+  ],
+  3:[
+    {id:301,user:"Sanjay Patel",avatar:"SP",avColor:"#10b981",text:"₹2000 every 4 months lands directly in my account without any middleman. Finally a government scheme that works!",reactions:{"👍":52,"😊":28,"👎":2,"😡":1},time:"Just now",sentiment:"positive"},
+    {id:302,user:"Kavita Singh",avatar:"KS",avColor:"#9333ea",text:"Verification keeps failing due to land record mismatches. Three years and still not enrolled despite multiple visits.",reactions:{"👍":21,"😊":2,"👎":8,"😡":27},time:"4 days ago",sentiment:"negative"},
+  ],
+};
+
+const SENTIMENT_DATA=[
+  {month:"Jul",pos:62,neu:22,neg:16},{month:"Aug",pos:58,neu:25,neg:17},
+  {month:"Sep",pos:67,neu:20,neg:13},{month:"Oct",pos:71,neu:18,neg:11},
+  {month:"Nov",pos:65,neu:21,neg:14},{month:"Dec",pos:74,neu:17,neg:9},
+  {month:"Jan",pos:69,neu:19,neg:12},
+];
+const MINISTRY_DATA=[
+  {name:"Health",pos:74,neg:26},{name:"Education",pos:81,neg:19},
+  {name:"Employment",pos:68,neg:32},{name:"Transport",pos:63,neg:37},
+  {name:"Women",pos:79,neg:21},{name:"Housing",pos:58,neg:42},
+];
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let currentUser=null;
+let favorites=[];
+let currentScheme=null;
+let schemeComments={};
+let userReactions={};
+let commentSort="latest";
+let activeFilter="All";
+let chartsBuilt=false;
+
+// deep copy comments
+Object.keys(COMMENTS_DATA).forEach(k=>{schemeComments[k]=JSON.parse(JSON.stringify(COMMENTS_DATA[k]));});
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+function goTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const nb=document.getElementById('nav'+page.charAt(0).toUpperCase()+page.slice(1));
+  if(nb)nb.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('mainFooter').style.display=(page==='login'||page==='register')?'none':'block';
+  if(page==='schemes')renderSchemes();
+  if(page==='favorites')renderFavorites();
+  if(page==='admin')renderAdmin();
+  if(page==='detail')renderDetail();
+  closeNotif();
+}
+
+function filterAndGo(cat){
+  activeFilter=cat;
+  goTo('schemes');
+}
+
+// ══════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  let valid=true;
+  if(!email){showErr('loginEmailErr','Email or phone is required');valid=false;}
+  else if(!/\S+@\S+\.\S+/.test(email)&&!/^\d{10}$/.test(email)){showErr('loginEmailErr','Enter valid email or 10-digit phone');valid=false;}
+  else hideErr('loginEmailErr');
+  if(!pass||pass.length<4){showErr('loginPassErr','Password must be at least 6 characters');valid=false;}
+  else hideErr('loginPassErr');
+  if(!valid)return;
+  const btn=document.getElementById('loginBtn');
+  btn.innerHTML='<span class="spinner"></span> Signing in...';btn.disabled=true;
+  setTimeout(()=>{
+    const isAdmin=email==='admin@gov.in';
+    currentUser={name:isAdmin?'Admin Officer':'Citizen User',email,role:isAdmin?'admin':'citizen'};
+    updateUserUI();
+    goTo('home');
+    btn.innerHTML='Sign In';btn.disabled=false;
+    document.getElementById('loginEmail').value='';document.getElementById('loginPass').value='';
+  },1200);
+}
+
+function doRegister(){
+  const name=document.getElementById('regName').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const phone=document.getElementById('regPhone').value.trim();
+  const state=document.getElementById('regState').value;
+  const pass=document.getElementById('regPass').value;
+  const confirm=document.getElementById('regConfirm').value;
+  let valid=true;
+  if(!name){showErr('regNameErr','Full name is required');valid=false;}else hideErr('regNameErr');
+  if(!email||!/\S+@\S+\.\S+/.test(email)){showErr('regEmailErr','Valid email required');valid=false;}else hideErr('regEmailErr');
+  if(!phone||!/^\d{10}$/.test(phone)){showErr('regPhoneErr','Valid 10-digit phone required');valid=false;}else hideErr('regPhoneErr');
+  if(!state){showErr('regStateErr','Please select your state');valid=false;}else hideErr('regStateErr');
+  if(!pass||pass.length<8){showErr('regPassErr','Password must be at least 8 characters');valid=false;}else hideErr('regPassErr');
+  if(pass!==confirm){showErr('regConfirmErr','Passwords do not match');valid=false;}else hideErr('regConfirmErr');
+  if(!valid)return;
+  const btn=document.getElementById('regBtn');
+  btn.innerHTML='<span class="spinner"></span> Creating account...';btn.disabled=true;
+  setTimeout(()=>{
+    document.getElementById('regForm').style.display='none';
+    document.getElementById('regSuccess').style.display='block';
+    btn.innerHTML='Create Account';btn.disabled=false;
+  },1200);
+}
+
+function logout(){
+  currentUser=null;updateUserUI();goTo('home');
+}
+
+function updateUserUI(){
+  const authBtns=document.getElementById('authBtns');
+  const userChip=document.getElementById('userChip');
+  const adminNav=document.getElementById('navAdmin');
+  if(currentUser){
+    authBtns.style.display='none';
+    userChip.style.display='flex';
+    document.getElementById('userAvatar').textContent=currentUser.name.charAt(0);
+    document.getElementById('userName').textContent=currentUser.name;
+    adminNav.style.display=currentUser.role==='admin'?'block':'none';
+  }else{
+    authBtns.style.display='flex';
+    userChip.style.display='none';
+    adminNav.style.display='none';
+  }
+}
+
+function showErr(id,msg){const e=document.getElementById(id);e.textContent=msg;e.style.display='block';e.previousElementSibling.classList.add('error');}
+function hideErr(id){const e=document.getElementById(id);e.style.display='none';e.previousElementSibling.classList.remove('error');}
+
+// ══════════════════════════════════════════════════
+// SCHEMES
+// ══════════════════════════════════════════════════
+const CATS=['All','Health','Education','Employment','Transport','Women Welfare','Housing'];
+
+function renderSchemes(){
+  // Pills
+  const pillsEl=document.getElementById('filterPills');
+  pillsEl.innerHTML=CATS.map(c=>`<button class="pill${c===activeFilter?' active':''}" onclick="setFilter('${c}')">${c}</button>`).join('');
+  renderSchemeCards();
+}
+
+function setFilter(cat){
+  activeFilter=cat;
+  document.querySelectorAll('.pill').forEach(p=>{p.classList.toggle('active',p.textContent===cat)});
+  renderSchemeCards();
+}
+
+function filterSchemes(){renderSchemeCards();}
+
+function renderSchemeCards(){
+  const q=(document.getElementById('schemeSearch')||{}).value||'';
+  const filtered=SCHEMES.filter(s=>{
+    const matchCat=activeFilter==='All'||s.category===activeFilter;
+    const matchQ=!q||s.title.toLowerCase().includes(q.toLowerCase())||s.description.toLowerCase().includes(q.toLowerCase())||s.ministry.toLowerCase().includes(q.toLowerCase());
+    return matchCat&&matchQ;
+  });
+  document.getElementById('schemeCount').textContent=`${filtered.length} scheme${filtered.length!==1?'s':''} found`;
+  document.getElementById('schemesGrid').innerHTML=filtered.length?filtered.map(s=>schemeCardHTML(s,true)).join(''):`<div style="grid-column:1/-1;text-align:center;padding:80px 0"><div style="font-size:64px;margin-bottom:16px">🔍</div><div style="font-size:18px;font-weight:700;color:#64748b">No schemes found</div><div style="color:#94a3b8;margin-top:8px">Try a different search term or category</div></div>`;
+}
+
+function schemeCardHTML(s,clickable=true){
+  const bc=BADGE_COLORS[s.category]||{bg:'#f1f5f9',color:'#475569'};
+  return`<div class="scheme-card" onclick="${clickable?`openScheme(${s.id})`:''}" style="cursor:${clickable?'pointer':'default'}">
+    <div class="scheme-card-top" style="background:${s.color}"></div>
+    <div class="scheme-card-body">
+      <div class="scheme-badges">
+        <span class="scheme-badge" style="background:${bc.bg};color:${bc.color}">${s.category}</span>
+        ${s.deadline!=='Ongoing'?`<span class="scheme-deadline">⏰ ${s.deadline}</span>`:''}
+      </div>
+      <h3>${s.title}</h3>
+      <div class="scheme-ministry">${s.ministry}</div>
+      <p class="scheme-desc">${s.description}</p>
+      ${clickable?`<button class="btn-view" style="background:linear-gradient(135deg,${s.color},${s.color}dd)">View Details →</button>`:''}
+    </div>
+  </div>`;
+}
+
+function openScheme(id){
+  currentScheme=SCHEMES.find(s=>s.id===id);
+  renderDetail();
+  goTo('detail');
+}
+
+// ══════════════════════════════════════════════════
+// DETAIL
+// ══════════════════════════════════════════════════
+function renderDetail(){
+  if(!currentScheme)return;
+  const s=currentScheme;
+  const bc=BADGE_COLORS[s.category]||{bg:'#f1f5f9',color:'#475569'};
+  document.getElementById('detailBreadcrumb').textContent=s.title;
+  document.getElementById('detailBadges').innerHTML=`
+    <span class="scheme-badge" style="background:${bc.bg};color:${bc.color};font-size:12px;font-weight:700;padding:4px 12px;border-radius:50px">${s.category}</span>
+    ${s.deadline!=='Ongoing'?`<span class="scheme-deadline">⏰ Deadline: ${s.deadline}</span>`:'<span style="font-size:12px;color:#059669;background:#f0fdf4;border:1px solid #bbf7d0;padding:4px 12px;border-radius:50px;font-weight:700">✅ Ongoing</span>'}
+  `;
+  document.getElementById('detailTitle').textContent=s.title;
+  document.getElementById('detailMinistry').textContent='Ministry of '+s.ministry;
+  document.getElementById('detailDesc').textContent=s.details;
+  document.getElementById('detailLink').href=s.link;
+  updateFavBtn();
+  renderComments();
+}
+
+function updateFavBtn(){
+  const btn=document.getElementById('favBtn');
+  if(!btn||!currentScheme)return;
+  const isFav=favorites.includes(currentScheme.id);
+  btn.className='btn-fav'+(isFav?' saved':'');
+  btn.innerHTML=isFav?'★ Saved':'☆ Save Scheme';
+}
+
+function toggleFav(){
+  if(!currentUser){goTo('login');return;}
+  const id=currentScheme.id;
+  if(favorites.includes(id))favorites=favorites.filter(f=>f!==id);
+  else favorites.push(id);
+  updateFavBtn();
+}
+
+// ══════════════════════════════════════════════════
+// COMMENTS
+// ══════════════════════════════════════════════════
+function renderComments(){
+  const s=currentScheme;
+  const comments=schemeComments[s.id]||[];
+  document.getElementById('commentCount').textContent=`(${comments.length})`;
+  // Add comment area
+  const addArea=document.getElementById('addCommentArea');
+  if(currentUser){
+    const myComments=comments.filter(c=>c.user===currentUser.name);
+    const canComment=myComments.length<3;
+    addArea.innerHTML=`<div class="add-comment-wrap">
+      <div class="user-av-sm">${currentUser.name.charAt(0)}</div>
+      <div class="comment-input-area">
+        <textarea class="comment-textarea" id="commentText" rows="3" ${!canComment?'disabled':''} placeholder="${canComment?'Share your experience with this scheme...':'You have reached the 3-comment limit for this scheme.'}"></textarea>
+        <div class="comment-meta">
+          <span class="comment-remaining">${3-myComments.length} comment${3-myComments.length!==1?'s':''} remaining</span>
+          <button class="btn-post" onclick="postComment()" ${!canComment?'disabled':''}>Post Comment</button>
+        </div>
+      </div>
+    </div>`;
+  }else{
+    addArea.innerHTML=`<div class="sign-in-prompt"><p>Sign in to leave your feedback on this scheme</p><button class="btn-signin-prompt" onclick="goTo('login')">Sign In to Comment</button></div>`;
+  }
+  renderCommentList();
+}
+
+function renderCommentList(){
+  const s=currentScheme;
+  let comments=[...(schemeComments[s.id]||[])];
+  if(commentSort==='liked')comments.sort((a,b)=>(b.reactions['👍']||0)-(a.reactions['👍']||0));
+  else comments.sort((a,b)=>b.id-a.id);
+  const avColors=['#7c3aed','#f43f5e','#10b981','#1a56db','#f97316','#db2777','#0d9488'];
+  document.getElementById('commentsList').innerHTML=comments.map((c,i)=>{
+    const col=c.avColor||avColors[i%avColors.length];
+    const sp=c.sentiment;
+    return`<div class="comment-item">
+      <div class="comment-av" style="background:${col};color:#fff">${c.avatar}</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">${c.user}</span>
+          <span class="comment-time">${c.time}</span>
+          <span class="sent-pill ${sp}">${sp}</span>
+        </div>
+        <div class="comment-text">${c.text}</div>
+        <div class="reaction-btns">
+          ${['👍','👎','😊','😡'].map(e=>{
+            const rkey=`${s.id}-${c.id}-${e}`;
+            const reacted=userReactions[rkey];
+            return`<button class="react-btn${reacted?' reacted':''}" onclick="react(${c.id},'${e}')">${e} ${c.reactions[e]||0}</button>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function postComment(){
+  const text=(document.getElementById('commentText')||{}).value||'';
+  if(!text.trim()||!currentUser)return;
+  const s=currentScheme;
+  if(!schemeComments[s.id])schemeComments[s.id]=[];
+  const myC=schemeComments[s.id].filter(c=>c.user===currentUser.name);
+  if(myC.length>=3)return;
+  const sentiment=text.toLowerCase().includes('good')||text.toLowerCase().includes('great')||text.toLowerCase().includes('excellent')||text.toLowerCase().includes('saved')||text.toLowerCase().includes('helpful')?'positive':text.toLowerCase().includes('bad')||text.toLowerCase().includes('worst')||text.toLowerCase().includes('reject')||text.toLowerCase().includes('fail')?'negative':'neutral';
+  schemeComments[s.id].unshift({id:Date.now(),user:currentUser.name,avatar:currentUser.name.charAt(0).toUpperCase(),avColor:'#1a56db',text:text.trim(),reactions:{'👍':0,'👎':0,'😊':0,'😡':0},time:'Just now',sentiment});
+  renderComments();
+}
+
+function react(commentId,emoji){
+  const s=currentScheme;
+  const rkey=`${s.id}-${commentId}-${emoji}`;
+  if(userReactions[rkey])return;
+  userReactions[rkey]=true;
+  const c=schemeComments[s.id].find(c=>c.id===commentId);
+  if(c)c.reactions[emoji]=(c.reactions[emoji]||0)+1;
+  renderCommentList();
+}
+
+function sortComments(v){commentSort=v;renderCommentList();}
+
+// ══════════════════════════════════════════════════
+// FAVORITES
+// ══════════════════════════════════════════════════
+function renderFavorites(){
+  const grid=document.getElementById('favGrid');
+  const empty=document.getElementById('favEmpty');
+  const loginPr=document.getElementById('loginPromptFav');
+  const cnt=document.getElementById('favCount');
+  if(!currentUser){grid.innerHTML='';empty.style.display='none';loginPr.style.display='block';cnt.textContent='Sign in to view your saved schemes';return;}
+  loginPr.style.display='none';
+  const favSchemes=SCHEMES.filter(s=>favorites.includes(s.id));
+  cnt.textContent=`${favSchemes.length} scheme${favSchemes.length!==1?'s':''} saved`;
+  if(!favSchemes.length){grid.innerHTML='';empty.style.display='block';}
+  else{empty.style.display='none';grid.innerHTML=favSchemes.map(s=>schemeCardHTML(s,true)).join('');}
+}
+
+// ══════════════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════════════
+function renderAdmin(){
+  renderMinistryBars();
+  renderCommentsPanel();
+  renderMinistryCards();
+  if(!chartsBuilt){buildCharts();chartsBuilt=true;}
+}
+
+function renderMinistryBars(){
+  document.getElementById('ministryBarsDetail').innerHTML=MINISTRY_DATA.map(m=>{
+    const status=m.pos>=75?'Excellent':m.pos>=60?'Moderate':'Needs Attention';
+    const sc=m.pos>=75?'excellent':m.pos>=60?'moderate':'attention';
+    return`<div class="ministry-row">
+      <div class="ministry-name">${m.name}</div>
+      <div class="ministry-track">
+        <div class="ministry-pos" style="width:${m.pos}%"></div>
+        <div class="ministry-neg" style="width:${m.neg}%"></div>
+      </div>
+      <div class="ministry-pcts"><span class="pos">+${m.pos}%</span><span class="neg">-${m.neg}%</span></div>
+      <div class="ministry-status"><span class="status-pill status-${sc}">${status}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function renderCommentsPanel(){
+  const allC=Object.values(schemeComments).flat();
+  const pos=allC.filter(c=>c.sentiment==='positive').sort((a,b)=>(b.reactions['👍']||0)-(a.reactions['👍']||0)).slice(0,5);
+  const neg=allC.filter(c=>c.sentiment==='negative').sort((a,b)=>(b.reactions['😡']||0)-(a.reactions['😡']||0)).slice(0,5);
+  document.getElementById('commentsPanel').innerHTML=`
+    <div class="comments-panel">
+      <h3>✅ <span style="color:#059669">Top Positive Comments</span></h3>
+      ${pos.map((c,i)=>`<div class="panel-comment positive"><div class="panel-rank">#${i+1}</div><div class="panel-user">${c.user}</div><div class="panel-text">${c.text}</div><div class="panel-likes" style="color:#059669">👍 ${c.reactions['👍']} likes</div></div>`).join('')}
+    </div>
+    <div class="comments-panel">
+      <h3>⚠️ <span style="color:#dc2626">Top Negative Comments</span></h3>
+      ${neg.map((c,i)=>`<div class="panel-comment negative"><div class="panel-rank">#${i+1}</div><div class="panel-user">${c.user}</div><div class="panel-text">${c.text}</div><div class="panel-likes" style="color:#dc2626">😡 ${c.reactions['😡']} reactions</div></div>`).join('')}
+    </div>`;
+}
+
+function renderMinistryCards(){
+  document.getElementById('ministryDetailCards').innerHTML=MINISTRY_DATA.map(m=>{
+    const status=m.pos>=75?'Excellent':m.pos>=60?'Moderate':'Needs Attention';
+    const sc=m.pos>=75?'excellent':m.pos>=60?'moderate':'attention';
+    const gradColor=m.pos>=75?'linear-gradient(135deg,#10b981,#0d9488)':m.pos>=60?'linear-gradient(135deg,#f59e0b,#f97316)':'linear-gradient(135deg,#f43f5e,#db2777)';
+    return`<div style="background:#fff;border-radius:20px;padding:24px;border:1px solid #e2e8f0;margin-bottom:16px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+      <div style="background:${gradColor};border-radius:16px;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🏛️</div>
+      <div style="flex:1">
+        <div style="font-size:20px;font-weight:800;color:#0f172a;margin-bottom:4px">${m.name}</div>
+        <div style="display:flex;gap:16px;font-size:14px"><span style="color:#059669;font-weight:700">✅ ${m.pos}% Positive</span><span style="color:#dc2626;font-weight:700">❌ ${m.neg}% Negative</span></div>
+        <div style="margin-top:10px;height:8px;background:#f1f5f9;border-radius:999px;overflow:hidden;display:flex">
+          <div style="width:${m.pos}%;background:linear-gradient(90deg,#10b981,#34d399);height:100%;border-radius:999px 0 0 999px"></div>
+          <div style="width:${m.neg}%;background:linear-gradient(90deg,#f43f5e,#fb7185);height:100%;border-radius:0 999px 999px 0"></div>
+        </div>
+      </div>
+      <div><span class="status-pill status-${sc}" style="font-size:13px;padding:6px 16px">${status}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function switchAdminTab(tab,btn){
+  document.querySelectorAll('.admin-tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+let trendChart=null,ministryChart=null;
+function buildCharts(){
+  const tc=document.getElementById('trendChart');
+  const mc=document.getElementById('ministryChart');
+  if(!tc||!mc)return;
+  if(trendChart)trendChart.destroy();
+  if(ministryChart)ministryChart.destroy();
+  trendChart=new Chart(tc,{
+    type:'line',
+    data:{
+      labels:SENTIMENT_DATA.map(d=>d.month),
+      datasets:[
+        {label:'Positive',data:SENTIMENT_DATA.map(d=>d.pos),borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',tension:.4,fill:true,pointBackgroundColor:'#10b981',pointRadius:5,borderWidth:2.5},
+        {label:'Neutral',data:SENTIMENT_DATA.map(d=>d.neu),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.06)',tension:.4,fill:true,pointBackgroundColor:'#f59e0b',pointRadius:5,borderWidth:2.5},
+        {label:'Negative',data:SENTIMENT_DATA.map(d=>d.neg),borderColor:'#f43f5e',backgroundColor:'rgba(244,63,94,0.06)',tension:.4,fill:true,pointBackgroundColor:'#f43f5e',pointRadius:5,borderWidth:2.5},
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12,font:{size:12,family:'Nunito'}}}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%',font:{family:'Nunito'}},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false},ticks:{font:{family:'Nunito'}}}}}
+  });
+  ministryChart=new Chart(mc,{
+    type:'bar',
+    data:{
+      labels:MINISTRY_DATA.map(d=>d.name),
+      datasets:[
+        {label:'Positive',data:MINISTRY_DATA.map(d=>d.pos),backgroundColor:'rgba(16,185,129,0.85)',borderRadius:8,borderSkipped:false},
+        {label:'Negative',data:MINISTRY_DATA.map(d=>d.neg),backgroundColor:'rgba(244,63,94,0.85)',borderRadius:8,borderSkipped:false},
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{position:'top',labels:{boxWidth:12,font:{size:12,family:'Nunito'}}}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%',font:{family:'Nunito'}},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false},ticks:{font:{family:'Nunito'}}}}}
+  });
+}
+
+// ══════════════════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════════════════
+function toggleNotif(){
+  const d=document.getElementById('notifDrop');
+  d.classList.toggle('notif-hidden');
+}
+function closeNotif(){document.getElementById('notifDrop').classList.add('notif-hidden');}
+document.addEventListener('click',e=>{if(!e.target.closest('.notif-wrap'))closeNotif();});
+
+// ══════════════════════════════════════════════════
+// ANIMATED COUNTERS
+// ══════════════════════════════════════════════════
+function animateCounter(id,target,suffix,duration=1800){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const start=performance.now();
+  function step(now){
+    const p=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-p,4);
+    const val=Math.round(ease*target);
+    el.textContent=val.toLocaleString('en-IN')+suffix;
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ══════════════════════════════════════════════════
+// INTERSECTION OBSERVER (fade-in)
+// ══════════════════════════════════════════════════
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.1});
+document.querySelectorAll('.fade-in').forEach(el=>observer.observe(el));
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    animateCounter('ctr-schemes',240,'');
+    animateCounter('ctr-users',1840000,'');
+    animateCounter('ctr-feedback',52841,'');
+    animateCounter('ctr-sat',71,'%');
+  },300);
+  document.getElementById('regSuccess').style.display='none';
+  document.getElementById('regForm').style.display='block';
+});
+</script>
+</body>
+</html>
